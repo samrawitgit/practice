@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 
+import TodoType from "../models/TodoType";
 import styled from "styled-components";
 
 const StyledForm = styled.form`
@@ -50,31 +51,47 @@ const StyledForm = styled.form`
   }
 `;
 
-type TodoType = {
-  userId: number | undefined;
-  id: number;
-  title: string;
-  completed: boolean;
-};
 const InputTodo: React.FC<{ addTodo: (data: TodoType) => void }> = (props) => {
-  const [newTodo, setNewTodo] = useState<string>("");
+  const [newTodo, setNewTodo] = useState<string | undefined>(undefined);
 
   const newTodoChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewTodo(event.target.value);
   };
 
+  var myTodoValue = useRef<string | null>(null);
+
+  const formDataMemo = useMemo(() => {
+    console.log("call uM");
+    let formData = new FormData();
+    if (myTodoValue.current !== null) {
+      formData.append("title", myTodoValue.current);
+      return formData;
+    }
+  }, [myTodoValue]);
+
+  useEffect(() => {
+    console.log("call uE");
+    fetch("https://jsonplaceholder.typicode.com/todos", {
+      method: "POST",
+      body: formDataMemo,
+    })
+      .then((response) => response.json())
+      .then((result) => {
+        console.log("Success:", result);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }, [formDataMemo]);
+
   const submitHandler = (event: React.FormEvent<EventTarget>) => {
     event.preventDefault();
 
-    if (newTodo.trim() !== "") {
-      const todoData = {
-        userId: 1,
-        id: 5,
-        title: newTodo,
-        completed: false,
-      };
-
+    if (newTodo !== undefined && newTodo.trim() !== "") {
+      const todoData = new TodoType(newTodo);
       props.addTodo(todoData);
+
+      setNewTodo("");
     } else {
       // Add error message
     }
@@ -82,12 +99,13 @@ const InputTodo: React.FC<{ addTodo: (data: TodoType) => void }> = (props) => {
 
   return (
     <StyledForm onSubmit={submitHandler}>
-      {/* <label>New Todo</label> */}
       <input
         type="text"
         placeholder="Add new Todo..."
         value={newTodo}
         onChange={newTodoChangeHandler}
+        name="title"
+        id="myTodo"
       />
       <button type="submit">Add</button>
     </StyledForm>
