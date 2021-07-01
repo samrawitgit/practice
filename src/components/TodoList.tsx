@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Observable } from "rxjs";
-import { filter, map, groupBy } from "rxjs/operators";
+
 import styled from "styled-components";
-import Todo from "./Todo";
 import InputTodo from "./InputTodo";
+import List from "./List";
+import TodoType from "../models/TodoType";
 
 const StyledTodoList = styled.ul`
   list-style: none;
@@ -14,49 +14,22 @@ const StyledTodoList = styled.ul`
 `;
 
 const TodoList = () => {
-  type TodoType = {
-    userId: number | undefined;
-    id: number;
-    title: string;
-    completed: boolean;
-  };
   const [todos, setTodos] = useState<TodoType[]>([]);
 
+  const url = "https://jsonplaceholder.typicode.com/todos";
   const getData = () => {
-    fetch("https://jsonplaceholder.typicode.com/todos")
+    fetch(url)
       .then((response) => response.json())
       .then((data) => setTodos(data));
   };
 
   useEffect(() => {
     getData();
-  }, []);
-
-  var observable = new Observable<TodoType[] | string>((observer) => {
-    try {
-      observer.next("Hi");
-      // subscriber.next(todos);
-      observer.complete();
-    } catch (err) {
-      observer.error(err);
-    }
-  });
-
-  console.log(" from before subscriber");
-  observable.subscribe((x) => {
-    console.log(x + " from subscriber");
-  });
-  console.log(" from after subscriber");
-
-  /* Creare un array per ogni utente (raggruppare utenti per userId)*/
-  observable
-    // .pipe(groupBy((todo) => todo.userId))
-    .subscribe((todo) => console.log(todo));
+    console.log("Hi from uE");
+  }, [url]);
 
   const addNewTodo = (newTodo: TodoType) => {
-    //e.preventDefault();
-    console.log(newTodo);
-
+    //console.log(newTodo);
     setTodos((prevState) => {
       return [newTodo, ...prevState];
     });
@@ -67,11 +40,7 @@ const TodoList = () => {
       <h1>Lista Todo</h1>
       <StyledTodoList>
         <InputTodo addTodo={addNewTodo} />
-        {todos.map((todo) => (
-          <li key={todo.id}>
-            <Todo id={todo.id} title={todo.title} completed={todo.completed} />
-          </li>
-        ))}
+        <List todos={todos} />
       </StyledTodoList>
     </React.Fragment>
   );
