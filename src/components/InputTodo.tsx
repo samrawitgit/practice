@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 
-import TodoType from "../models/TodoType";
 import styled from "styled-components";
+import TodoType from "../models/TodoType";
+import StyledWrapper from "./UI/Wrapper";
+import ErrorModal from "./UI/ErrorModal";
 
 const StyledForm = styled.form`
   display: flex;
@@ -53,6 +55,10 @@ const StyledForm = styled.form`
 
 const InputTodo: React.FC<{ addTodo: (data: TodoType) => void }> = (props) => {
   const [newTodo, setNewTodo] = useState<string | undefined>(undefined);
+  const [error, setError] = useState<{
+    title: string;
+    message: string;
+  } | null>();
 
   const newTodoChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewTodo(event.target.value);
@@ -94,21 +100,40 @@ const InputTodo: React.FC<{ addTodo: (data: TodoType) => void }> = (props) => {
       setNewTodo("");
     } else {
       // Add error message
+
+      setError({
+        title: "Invalid input",
+        message: "Please enter a valid Todo (non-empty values).",
+      });
+      return;
     }
   };
 
+  const errorHandler = () => {
+    setError(null);
+  };
+
   return (
-    <StyledForm onSubmit={submitHandler}>
-      <input
-        type="text"
-        placeholder="Add new Todo..."
-        value={newTodo}
-        onChange={newTodoChangeHandler}
-        name="title"
-        id="myTodo"
-      />
-      <button type="submit">Add</button>
-    </StyledForm>
+    <StyledWrapper className="form-wrapper">
+      {error && (
+        <ErrorModal
+          title={error.title}
+          message={error.message}
+          onConfirm={errorHandler}
+        />
+      )}
+      <StyledForm onSubmit={submitHandler}>
+        <input
+          type="text"
+          placeholder="Add new Todo..."
+          value={newTodo}
+          onChange={newTodoChangeHandler}
+          name="title"
+          id="myTodo"
+        />
+        <button type="submit">Add</button>
+      </StyledForm>
+    </StyledWrapper>
   );
 };
 
