@@ -1,6 +1,6 @@
 import React from "react";
 
-import { fromEvent, from } from "rxjs";
+import { fromEvent, of } from "rxjs";
 import { map, scan, take } from "rxjs/operators";
 import Todo from "./Todo";
 import TodoType from "../models/TodoType";
@@ -15,15 +15,12 @@ const List: React.FC<{ todos: TodoType[] }> = (props) => {
   positions.subscribe((x) => console.log(x));
 
   let lista: TodoType[] = [];
-  from(props.todos)
+  of(props.todos)
     .pipe(
-      take(10),
-      map((x, ind) => {
-        for (let i = 0; i < 10; i++) {
-          if (i === ind) {
+      //take(10),
+      map((x, i) => {
+        for (i = 0; i < 10; i++) {
             lista[i] = x;
-            ind++;
-          }
         }
       })
     )
