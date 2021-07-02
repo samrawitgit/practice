@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 
 import TodoType from "../models/TodoType";
+import StyledWrapper from "./UI/Wrapper";
 import styled from "styled-components";
 import DoneIcon from "@material-ui/icons/Done";
 import CloseIcon from "@material-ui/icons/Close";
@@ -14,11 +15,6 @@ const TodoItem = styled.div`
   padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
-`;
-
-const Wrapper = styled.div`
-  padding: 1.5rem;
-  background: #8ed2c98f;
 `;
 
 const Button: React.FC<{
@@ -71,7 +67,7 @@ const Todo: React.FC<{ todo: TodoType }> = (props) => {
   };
 
   return (
-    <Wrapper>
+    <StyledWrapper className="wrapper">
       <TodoItem>
         <h3>Todo: {props.todo.title}</h3>
         <StyledButton
@@ -80,7 +76,7 @@ const Todo: React.FC<{ todo: TodoType }> = (props) => {
           className="icon"
         />
       </TodoItem>
-    </Wrapper>
+    </StyledWrapper>
   );
 };
 
