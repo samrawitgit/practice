@@ -20,7 +20,7 @@ const List: React.FC<{ todos: TodoType[] }> = (props) => {
       //take(10),
       map((x, i) => {
         for (i = 0; i < 10; i++) {
-            lista[i] = x;
+          lista[i] = x;
         }
       })
     )
